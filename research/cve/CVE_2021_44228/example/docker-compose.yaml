@@ -1,0 +1,53 @@
+version: '2'
+services:
+  log4jldapserver:
+    image: cygenta/log4jldap
+    # ports:
+    #   - "1389:1389"
+    #   - "8888:8888"
+    networks:
+      log4j:
+        ipv4_address: 172.18.0.2
+
+  vulnerable_app:
+    image: ghcr.io/christophetd/log4shell-vulnerable-app
+    # ports:
+    #   - "8080:8080"
+    depends_on:
+      - log4jldapserver
+    networks:
+      log4j:
+        ipv4_address: 172.18.0.3
+
+  wireshark:
+    image: lscr.io/linuxserver/wireshark
+    container_name: wireshark
+    privileged: true
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+    ports:
+      - 3000:3000 #optional
+    depends_on:
+      - vulnerable_app
+    volumes:
+      - ./wireshark/:/config
+    networks:
+      log4j:
+        ipv4_address: 172.18.0.4
+  tools:
+    build:
+      context: .
+      dockerfile: Dockerfile.tools
+    image: tools
+    entrypoint: bash
+networks:
+  log4j:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+          gateway: 172.18.0.1
