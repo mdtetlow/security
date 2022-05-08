@@ -51,6 +51,21 @@ __Wireshark__
 
 Use a variation of Docker configuration found here: [https://docs.linuxserver.io/images/docker-wireshark](https://docs.linuxserver.io/images/docker-wireshark)
 
+__Commands__
+
+```shell
+# start all services
+$> docker compose up
+# stop all services
+$> docker compose down
+# clean up all Docker artifacts (including stop all services)
+$> ./scripts/cleanup.sh
+# test the Docker services and network
+$> ./scripts/test.sh
+# run interactive shell on tools image container
+$> docker run -it tools
+```
+
 
 ## Notes
 

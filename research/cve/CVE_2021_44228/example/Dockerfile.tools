@@ -1,5 +1,5 @@
 FROM ubuntu:20.04
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl wget netcat iputils-ping \
+    && apt-get install -y --no-install-recommends curl wget netcat iputils-ping tcpdump \
     && rm -rf /var/lib/apt/lists/*
 ENTRYPOINT ["bash"]
