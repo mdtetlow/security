@@ -9,7 +9,7 @@ services:
       log4j:
         ipv4_address: 172.18.0.2
 
-  vulnerable_app:
+  vulnapp:
     image: ghcr.io/christophetd/log4shell-vulnerable-app
     # ports:
     #   - "8080:8080"

