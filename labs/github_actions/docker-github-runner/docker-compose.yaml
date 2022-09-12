@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  runner:
+    build:
+      context: .
+      args:
+        RUNNER_VERSION: 2.296.1
+    environment:
+      - GH_TOKEN=${GITHUB_TOKEN}
+      - GH_OWNER=mdtetlow
+      - GH_REPOSITORY=github_action_playground
+      - REG_TOKEN=${GITHUB_ACTION_RUNNER_TOKEN}
