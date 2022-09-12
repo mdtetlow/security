@@ -1,0 +1,13 @@
+name: Issue Command Injection
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  print_issue_title:
+    runs-on: [self-hosted, linux, x64]
+
+    name: Print Issue Title
+    steps:
+    - run: echo "${{github.event.issue.title}}"
