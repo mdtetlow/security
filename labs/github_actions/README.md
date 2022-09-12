@@ -38,6 +38,18 @@ In GitHub web console, raise an issue with the following title
 new issue title" && ls / && echo "
 ```
 
+**Mitigation**
+
+Sanitise the input using environment variables
+
+```yaml
+    env:
+      TITLE: ${{github.event.issue.title}}
+    
+    run: |
+      echo "ISSUE TITLE: $TITLE"
+```
+
 After macro expansion, **issue title** will be converted to `echo "new issue title" && ls / && echo ""`
 
 ## References
