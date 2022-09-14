@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  gh_runner:
+    build:
+      context: runner
+      args:
+        RUNNER_VERSION: 2.296.1
+    environment:
+      - GH_TOKEN=${GITHUB_TOKEN}
+      - GH_OWNER=mdtetlow
+      - GH_REPOSITORY=github_action_playground
+      - REG_TOKEN=${GITHUB_ACTION_RUNNER_TOKEN}
+    networks:
+      gh_runner_net:
+        ipv4_address: 172.18.0.2
+  
+  exploit:
+    build:
+      context: exploit-client
+      dockerfile: Dockerfile
+    depends_on:
+      - gh_runner
+    networks:
+      gh_runner_net:
+        ipv4_address: 172.18.0.3
+  
+networks:
+  gh_runner_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+          gateway: 172.18.0.1
