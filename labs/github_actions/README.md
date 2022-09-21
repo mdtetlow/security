@@ -1,5 +1,25 @@
 # GitHub Actions Lab
 
+Lab consists of a docker GitHub runner and a docker exploit Linux host.
+
+**Build**
+
+To build the lab cd into `docker-github` directory and run `docker compose build`.
+
+**GitHub Runner**
+
+The GitHub runner requires the following environment variables being set
+
+`GITHUB_TOKEN` - GitHub Token with repo level privileges
+
+`GITHUB_ACTION_RUNNER_TOKEN` - Token provived by GitHub when configuring the self hosted runner
+
+Start the GitHub runner container with command `docker compose run gh_runner`.
+
+**Exploit Linux Host**
+
+Start the exploit Linux Docker container with command `docker compose run -i exploit`. This will provide you with an interactive shell.
+
 ## Objective
 
 Cover the following topics:
