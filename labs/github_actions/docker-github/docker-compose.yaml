@@ -19,8 +19,8 @@ services:
     build:
       context: exploit-client
       dockerfile: Dockerfile
-    depends_on:
-      - gh_runner
+#    depends_on:
+#     - gh_runner
     networks:
       gh_runner_net:
         ipv4_address: 172.18.0.3
