@@ -11,6 +11,7 @@ services:
       - GH_OWNER=mdtetlow
       - GH_REPOSITORY=github_action_playground
       - REG_TOKEN=${GITHUB_ACTION_RUNNER_TOKEN}
+    hostname: actionrunner
     networks:
       gh_runner_net:
         ipv4_address: 172.18.0.2
@@ -19,8 +20,7 @@ services:
     build:
       context: exploit-client
       dockerfile: Dockerfile
-#    depends_on:
-#     - gh_runner
+    hostname: remoteclient
     networks:
       gh_runner_net:
         ipv4_address: 172.18.0.3
