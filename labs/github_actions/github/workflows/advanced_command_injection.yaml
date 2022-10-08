@@ -1,0 +1,11 @@
+# Demonstrate importance of input validation e.g. ${{github.ref}}
+name: Branch Ref Command Injection
+
+on: push
+
+jobs:
+  branch_cmd_injection:
+    runs-on: [self-hosted, linux, x64]
+
+    steps:
+      - run: echo "branch name ${{ github.ref }}"
