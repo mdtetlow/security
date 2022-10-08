@@ -15,7 +15,6 @@ Network
 ## Build
 
 ```shell
-$> cd ./docker-github
 $> docker compose build
 ```
 
