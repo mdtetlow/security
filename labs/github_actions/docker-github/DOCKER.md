@@ -31,6 +31,8 @@ The following environment variables need to be set to run the GitHub Actions sel
 |-|-|-|
 | `GITHUB_TOKEN` | GitHub Personal Access Token with repo level privileges | [how to create a GitHub Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) |
 | `GITHUB_ACTION_RUNNER_TOKEN` | Token provided by GitHub when configuring the self hosted runner| [adding-self-hosted-runners](https://docs.github.com/en/actions/hosting-your-own-runners/adding-self-hosted-runners) - extract the token from the setup page |
+| GITHUB_OWNER | GitHub Username | |
+| GITHUB_REPOSITORY | Target GitHub Repository e.g. setup for GitHub Actions self-hosted runner ||
 
 examples:
 

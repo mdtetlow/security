@@ -8,9 +8,9 @@ services:
         RUNNER_VERSION: 2.296.1
     environment:
       - GH_TOKEN=${GITHUB_TOKEN}
-      - GH_OWNER=mdtetlow
-      - GH_REPOSITORY=github_action_playground
       - REG_TOKEN=${GITHUB_ACTION_RUNNER_TOKEN}
+      - GH_OWNER=${GITHUB_OWNER}
+      - GH_REPOSITORY=${GITHUB_REPOSITORY}
     hostname: actionrunner
     networks:
       gh_runner_net:
