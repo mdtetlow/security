@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 # HIBP (have I been pwned) Password API wrapper CLI tool
+# https://haveibeenpwned.com/API/v2#PwnedPasswords
 #
 # Overview:
 # Only the first 5 digits of the password Hash (SHA1) are passed to the API (HTTPS).
