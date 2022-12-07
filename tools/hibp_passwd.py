@@ -28,7 +28,7 @@ hash_prefix = lambda h : h[0:HASH_PREFIX_SIZE]
 hash_suffix = lambda h : h[HASH_PREFIX_SIZE:]
 
 def usage():
-  print("Usage: {} <plaintext password>".format(sys.argv[0]))
+  print("Usage: %s <plaintext password>" % sys.argv[0])
   exit(1)
 
 def password_sha1(plaintext_password):
@@ -42,7 +42,7 @@ def password_leaked(passwd_sha1):
   if http_status != HTTP_STATUS_SUCCESS:
     return -1
   
-  m1 = re.search(r"{}".format(hash_suffix(passwd_sha1)), data)
+  m1 = re.search(r"%s" % hash_suffix(passwd_sha1), data)
   if m1:
     data_remaining = data[m1.end():m1.end()+30]
     m2 = re.search(r'\d.*', data_remaining)
@@ -52,7 +52,7 @@ def password_leaked(passwd_sha1):
 
 def invoke_api(passwd_sha1):
   prefix = passwd_sha1[0:5]
-  resp = requests.get("{}/{}".format(API, prefix))
+  resp = requests.get("%s/%s" % (API, prefix))
   return resp.status_code, resp.text
 
 if __name__ == '__main__':
