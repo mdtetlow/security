@@ -28,7 +28,7 @@ hash_prefix = lambda h : h[0:HASH_PREFIX_SIZE]
 hash_suffix = lambda h : h[HASH_PREFIX_SIZE:]
 
 def usage():
-  print("Usage: %s <plaintext password>" % sys.argv[0])
+  print(f'Usage: {sys.argv[0]} <plaintext password>')
   exit(1)
 
 def password_sha1(plaintext_password):
@@ -51,7 +51,7 @@ def password_leaked(passwd_sha1):
   return count
 
 def invoke_api(passwd_sha1_prefix):
-  resp = requests.get("%s/%s" % (API, passwd_sha1_prefix))
+  resp = requests.get(f'{API}/{passwd_sha1_prefix}')
   return resp.status_code, resp.text
 
 if __name__ == '__main__':
