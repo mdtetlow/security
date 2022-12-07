@@ -36,7 +36,7 @@ def password_sha1(plaintext_password):
   return passwd_sha1.hexdigest().upper()
 
 def password_leaked(passwd_sha1):
-  http_status, data = invoke_api(passwd_sha1)
+  http_status, data = invoke_api(hash_prefix(passwd_sha1))
   count = 0
 
   if http_status != HTTP_STATUS_SUCCESS:
@@ -44,15 +44,14 @@ def password_leaked(passwd_sha1):
   
   m1 = re.search(r"%s" % hash_suffix(passwd_sha1), data)
   if m1:
-    data_remaining = data[m1.end():m1.end()+30]
+    data_remaining = data[m1.end():]
     m2 = re.search(r'\d.*', data_remaining)
     count = int(data_remaining[m2.start():m2.end()])
   
   return count
 
-def invoke_api(passwd_sha1):
-  prefix = passwd_sha1[0:5]
-  resp = requests.get("%s/%s" % (API, prefix))
+def invoke_api(passwd_sha1_prefix):
+  resp = requests.get("%s/%s" % (API, passwd_sha1_prefix))
   return resp.status_code, resp.text
 
 if __name__ == '__main__':
