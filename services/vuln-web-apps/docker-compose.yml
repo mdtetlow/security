@@ -1,0 +1,30 @@
+version: "3.8"
+services:
+
+  juiceshop:
+    image: bkimminich/juice-shop:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - vulnet
+  
+  dvwa:
+    image: vulnerables/web-dvwa
+    ports:
+      - "80:80"
+    networks:
+      - vulnet
+  
+  webgoat:
+    image: webgoat/webgoat
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+    environment:
+      - TZ=Europe/London
+    networks:
+      - vulnet
+
+networks:
+  vulnet:
+    driver: bridge
