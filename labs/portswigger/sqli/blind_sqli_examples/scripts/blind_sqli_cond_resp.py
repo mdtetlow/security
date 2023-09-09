@@ -44,6 +44,7 @@ if __name__ == "__main__":
     print(target)
     print(cookies)
     print(data)
+    print(helper.headers)
   
   req = SqliHttpRequest(target, helper.headers, cookies)
   print("extracting password length...")

