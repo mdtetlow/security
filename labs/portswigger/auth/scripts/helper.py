@@ -26,6 +26,8 @@ def args():
     parser.add_argument('-u', '--username', help='username', required=True)
     parser.add_argument('-p', '--password', help='password', required=True)
     parser.add_argument('-l', '--login', help='login api', default="/login")
+    parser.add_argument('-f', '--file', help='password file', default="./passwords")
+    
     return parser.parse_args()
 
 def prepare_headers(headers):
