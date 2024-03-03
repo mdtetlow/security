@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from http import message
+from http import basic_message
 import argparse
 import socket
 
