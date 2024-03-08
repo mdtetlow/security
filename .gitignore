@@ -4,3 +4,5 @@
 *.log
 **/*venv/
 **/__pycache__
+**/dist
+**/*.egg-info
