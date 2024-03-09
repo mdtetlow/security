@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 
 class HTTPUrl:
 
-    def __init__(self, url):
+    def __init__(self, url: str):
         self.url = urlparse(url)
 
     def __str__(self) -> str:

@@ -20,9 +20,9 @@ if len(sys.argv) != 2:
 
 url = urlparse(sys.argv[1])
 
-message = message.create_http_message(method = 'GET',
-                                      url = sys.argv[1],
-                                      headers = {'Host': url.netloc, 'Cookie': 'key=please'})
+message = basic_message.create_http_message(method = 'GET',
+                                            url = sys.argv[1],
+                                            headers = {'Host': url.netloc, 'Cookie': 'key=please'})
 
 print(message)
 

@@ -6,11 +6,11 @@ RFC-9110: https://www.rfc-editor.org/rfc/rfc9110.html
 Mozilla HTTP Messages: https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages
 """
 
-from http.url import HTTPUrl
+from http_message.url import HTTPUrl
 
 def http_request_line(method: str,
                       path: str,
-                      version: str):
+                      version: str) -> str:
     """Create HTTP Request Line format string
 
     Parameters
@@ -23,10 +23,11 @@ def http_request_line(method: str,
     version : str
         HTTP version (1.1, 2.0, 3.0)
     """
+    req_path = path if path else '/'
 
-    return f"{method} {path} HTTP/{version}\r\n"
+    return f"{method} {req_path} HTTP/{version}\r\n"
 
-def http_header_section(headers: dict):
+def http_header_section(headers: dict) -> str:
     """Creates HTTP Headers section (including Cookies) according to RFC-9110
 
     Parameters
@@ -50,7 +51,7 @@ def http_body_section(body: list):
 
 def required_headers(version: str,
                      host: str,
-                     body: str = None):
+                     body: str = None) -> str:
     headers: dict = {'Accept': '*/*'}
 
     if version == '1.1':
@@ -69,7 +70,7 @@ def create_http_message(method: str,
                         url: str,
                         headers: dict = {},
                         body: str = None,
-                        version: str = "1.1"):
+                        version: str = "1.1") -> str:
     """Create HTTP Message according to RFC-9110
 
     Parameters
@@ -87,6 +88,7 @@ def create_http_message(method: str,
         HTTP version (1.1, 2.0, 3.0)
     """
     url_obj = HTTPUrl(url)
+    print(url_obj)
     request_line = http_request_line(method, url_obj.path(), version)
     headers_section = {**required_headers(version, url_obj.host(), body), **headers} # input argument headers overrides required headers values
     http_message = f"{request_line}{http_header_section(headers_section)}\r\n"
