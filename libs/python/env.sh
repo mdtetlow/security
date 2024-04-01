@@ -1,2 +1,4 @@
 #¬/usr/bin/env sh
-export PYTHONPATH=$(git rev-parse --show-toplevel)/libs/python/packages/
+ROOTDIR=$(git rev-parse --show-toplevel)
+SRCPATH=$(for d in  $(find ${ROOTDIR}/libs/python/packages -type d -name src); do echo -n "$d:"; done)
+export PYTHONPATH="${ROOTDIR}/libs/python/packages:$SRCPATH"
