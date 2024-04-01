@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from http.basic_message import create_http_message
-from http.url import HTTPUrl
+from http_message.basic_message import create_http_message
+from http_message.url import HTTPUrl
 import argparse
 import json
 import sys
