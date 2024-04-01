@@ -23,7 +23,10 @@ class HTTPUrl:
         return self.url.netloc.split(':')[0] # extract host from [host:port]
     
     def path(self):
-        path = self.url.path + f"?{self.url.query}" if self.url.query else self.url.path
+        path = '/'
+        if self.url.path:
+            path = self.url.path + f"?{self.url.query}" if self.url.query else self.url.path
+        
         return path
     
     def query(self):

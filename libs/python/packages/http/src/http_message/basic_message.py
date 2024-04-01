@@ -6,7 +6,7 @@ RFC-9110: https://www.rfc-editor.org/rfc/rfc9110.html
 Mozilla HTTP Messages: https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages
 """
 
-from http_message.url import HTTPUrl
+from .url import HTTPUrl
 
 def http_request_line(method: str,
                       path: str,
