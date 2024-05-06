@@ -1,6 +1,7 @@
 import json
 from abc import ABC, abstractmethod
 from .request import HTTPRequest
+import uuid
 
 class AbstractHTTPMessageBuilder(ABC):
     @abstractmethod
@@ -12,7 +13,7 @@ class AbstractHTTPMessageBuilder(ABC):
         pass
 
     @abstractmethod
-    def add_multipart_body_part(self, headers, body):
+    def add_multipart_body(self, headers, body):
         pass
 
     @abstractmethod
@@ -48,7 +49,14 @@ class HTTPRequestBuilder(AbstractHTTPMessageBuilder):
         
         return self
 
-    def add_multipart_body_part(self, headers, body = None):
+    def add_multipart_body(self, headers, body = None):
+        # add/update the required Content-Type Header
+        header_values = ', '.join(self.headers.values())
+        if not 'multipart/form-data' in header_values:
+            self.headers['Content-Type'] = f"multipart/form-data; boundary=--{str(uuid.uuid4())}"
+        elif not 'boundary=' in header_values:
+            self.headers['Content-Type'] += f"; boundary=--{str(uuid.uuid4())}"
+
         self.body.append( (headers, body) )
         return self
     
@@ -59,4 +67,3 @@ class HTTPRequestBuilder(AbstractHTTPMessageBuilder):
                            headers = self.headers,
                            body = self.body)
 
-        

@@ -1,5 +1,7 @@
 from .url import HTTPUrl
-import uuid
+from .header import HTTPHeader, HTTPHeaderSection
+from .body import HTTPBodySingleResource, HTTPBodyMultipleResource
+import socket
 
 class HTTPRequest:
     def __init__(self, 
@@ -11,71 +13,107 @@ class HTTPRequest:
         self.url = HTTPUrl(url)
         self.method = method
         self.version = version
-        self.headers = {**self.mandatory_headers(), **headers}
-        self.body = body
-        self.multi_part_boundary = f"--{uuid.uuid4().hex}"
+        self.header_section = self.__mandatory_headers()
+        self.header_section += HTTPHeaderSection(headers)
+        self.body = self.__setup_body(body) if body else None
+        self.request_line = lambda: f"{self.method} {self.url.path()} HTTP/{self.version}\r\n"
 
-    def mandatory_headers(self):
-        headers = {}
-        if self.version == '1.1':
-            headers['Host'] = self.url.host()
+    # @property
+    # def headers(self):
+    #     return self.header_section
+    
+    # @property
+    # def body(self):
+    #     return self.body
+    
+    def send(self) -> str:
+        resp = None
+        sock = None
+        request_message = self.request_line() + self.__prepare_headers()
+        if isinstance(self.body, HTTPBodySingleResource):
+            request_message += self.body
+            print(request_message)
+            sock, resp = self.__socket_send(self.url, request_message)
+        elif isinstance(self.body, HTTPBodyMultipleResource):
+            print(request_message, end='')
+            sock, resp = self.__socket_send(self.url, request_message, resp = False)
+            print(str(self.body))
+            sock, resp = self.__socket_send(self.url, str(self.body), sock = sock)
+        else:
+            raise ValueError('Invalid HTTP Body Type')
+            
+        return resp
+    
+    def __socket_send(self, url: HTTPUrl, message: str, resp: bool = True, sock = None):
+        s = sock
+        r = None
+        if not s:
+            s = socket.socket(family = socket.AF_INET, type = socket.SOCK_STREAM)
+            s.connect(url.inet_address())
         
-        headers['Accept'] = '*/*'
+        size = s.send(str.encode(message))
+        print(f"sent {size} bytes")
+        if resp:
+            r = s.recv(1024)
+        
+        return s, r
+    
+    def __setup_body(self, body):
+        _body = None
+        # multipart body
+        if isinstance(body, list) and isinstance(body[0], tuple):
+            boundary = None
+            content_type_header = self.header_section.get_header('Content-Type')
+            if content_type_header:
+                try:
+                    boundary = content_type_header['boundary']
+                except AttributeError:
+                    print('Exception: boundary not set in Content-Type Header')
+                    pass
+
+            bodies = body if isinstance(body, list) else [body] # convert to list if tuple
+            _body = HTTPBodyMultipleResource(boundary)
+            for h, b in body:
+                _body.add_body_part(
+                    header_section = HTTPHeaderSection(h),
+                    body = b
+                )
+        # single resource body
+        elif isinstance(body, list) and len(body) == 1 or isinstance(body, str):
+            body_str = body.pop() if isinstance(body, list) else body
+            _body = HTTPBodySingleResource(body_str)
+        else:
+            raise TypeError('Invalid body type')
+        
+        return _body
+    
+    def __mandatory_headers(self):
+        headers = HTTPHeaderSection()
+        if self.version == '1.1':
+            headers.add_header('Host', self.url.host())
+
+        headers.add_header('Accept', '*/*')
         return headers
     
-    def __prepare_headers(self, headers: dict):
-        headers_str = ''
-        content_type = headers.get('Content-Type')
-        if content_type and content_type.find('multipart/form-data') >= 0:
-            if content_type.find('boundary=') >= 0:
-                self.multi_part_boundary = content_type.split('boundary=').pop()
-            else:
-                headers['Content-Type'] += f"; boundary={self.multi_part_boundary}"
+    # def __prepare_message(self):
+    #     # add Content-Length Header if necessary
+    #     if self.method in ['POST', 'PUT'] and \
+    #        isinstance(self.body, HTTPBodySingleResource) or isinstance(self.body, HTTPBodyMultipleResource) and not \
+    #        self.header_section.get_header('Content-Length'):
+    #         self.header_section.add_header('Content-Length', len(self.body))
         
-        for k, v in headers.items():
-            headers_str += f"{k}: {v}\r\n"
+    #     return f"{self.method} {self.url.path()} HTTP/{self.version}\r\n" \
+    #            f"{str(self.header_section)}" \
+    #            f"{str(self.body)}"
+    
+    def __prepare_headers(self):
+        # add Content-Length Header if necessary
+        if self.method in ['POST', 'PUT'] and \
+           not self.header_section.get_header('Content-Length'):
+            self.header_section.add_header('Content-Length', len(self.body))
         
-        headers_str += '\r\n'
-        return headers_str
-    
-    def __prepare_singlepart_body(self):
-        return '\r\n'.join(self.body)
+        return str(self.header_section)
 
-    def __read_file(self, mime_type: str, file: str):
-        print(f"mime: {mime_type} {file}")
-
-    def __prepare_multipart_body(self):
-        body = ''
-
-        if not self.body:
-            return body
-        
-        print(self.body)
-        for headers, body_part in self.body:
-            content_disposition_header = headers.get('Content-Disposition')
-            file_contents = None
-            if content_disposition_header and 'filename=' in content_disposition_header:
-                params = content_disposition_header.split(';')
-                file_contents = self.__read_file(mime_type = '', file = '')
-            body += f"{self.multi_part_boundary}\r\n"
-            body += self.__prepare_headers(headers)
-            body += f"{body_part}\r\n"
-        
-        body += f"{self.multi_part_boundary}--\r\n"
-        return body
     
-    def __prepare_message(self):
-        message = f"{self.method} {self.url.path()} HTTP/{self.version}\r\n" \
-                  f"{self.__prepare_headers(self.headers)}"
-        if self.headers.get('Content-Type') and self.headers['Content-Type'].find('multipart/form-data') != -1:
-            message += self.__prepare_multipart_body()
-        else:
-            message += self.__prepare_singlepart_body()
-
-        return message
-    
-    def message(self):
-        return self.__prepare_message()
-    
-    def __str__(self):
-        return self.message()
+    # def __str__(self):
+    #     return self.__prepare_message()
